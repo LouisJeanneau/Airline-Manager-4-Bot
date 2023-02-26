@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         AM4 bot
 // @namespace    http://tampermonkey.net/
-// @version      0.3
-// @description  automate depart for flights
+// @version      0.4
+// @description  automate depart for flights, better autoprice for new routes
 // @author       Adentissa
 // @match        https://www.airlinemanager.com/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -12,6 +12,7 @@
 (function() {
     'use strict';
     setTimeout(executeEvery5Minutes, 2000);
+    betterAutoprice();
 })();
 
 function executeEvery5Minutes() {
@@ -38,4 +39,25 @@ function departAll() {
             GM_log("button clicked")
         }
     }
+}
+
+function betterAutoprice() {
+    const observer = new MutationObserver(
+        ()=> {
+            var autopriceButton = document.getElementById('introAuto');
+            if (autopriceButton) {
+                const line = autopriceButton.getAttribute('onclick');
+                const values = line.slice(line.indexOf('(') + 1, line.indexOf(')')).split(',');
+                const priceValues = values.slice(0, 4);
+                GM_log(priceValues); // Output: ["799", "1798", "2946"]
+                autoPrice(Math.floor(priceValues[0] * 1.1), Math.floor(priceValues[1] * 1.08), Math.floor(priceValues[2] * 1.06), priceValues[3]);
+                observer.disconnect();
+                setTimeout(executeEvery5Minutes, 10000);
+            }
+        });
+
+    // watch the new routes window
+    const targetNode = document.getElementById('newRouteInfo');
+    const config = {attributes: true, childList: true, subtree: true};
+    observer.observe(targetNode, config);
 }
