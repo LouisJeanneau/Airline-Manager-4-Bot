@@ -13,6 +13,8 @@ Please note that this bot is against the Terms of Service of the game and its us
 ## Usage
 This bot is currently in development and its functionality is limited. It can currently automate the following tasks:
 - [x] Departing all planes
+- [x] Better autoprice when setting up new routes
+- [x] Auto-start eco-friendly campaign
 - [ ] Buy fuel at low price when reserve are low
 - [ ] Buy CO2 quotas at low price when reserve are low
 - [ ] Launch A-checks 
