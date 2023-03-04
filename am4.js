@@ -33,6 +33,9 @@ function departAll() {
     var numberSpan = document.getElementById("listDepartAmount");
     GM_log(numberSpan.innerText + " flight(s) to depart.");
     if (numberSpan.innerText !== "0"){
+        // before departing, start eco-friendly campaign
+        // No better way to do it, since countdown is not visible by default
+        startEcoCampaign();
         var departButton = numberSpan.parentElement;
         if (departButton) {
             departButton.click();
@@ -40,6 +43,24 @@ function departAll() {
         }
     }
 }
+
+function startEcoCampaign() {
+    // Create a new XMLHttpRequest object
+    var xhttp = new XMLHttpRequest();
+
+    // Define the callback function that will be executed when the request completes
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Do something with the response
+            GM_log("Eco-friendly campaign started " + this.responseText);
+        }
+    };
+
+    // Open the connection to the server and send the request
+    xhttp.open("GET", "marketing_new.php?type=5&mode=do&c=1", true);
+    xhttp.send();
+}
+
 
 function betterAutoprice() {
     const observer = new MutationObserver(
