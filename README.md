@@ -15,8 +15,8 @@ This bot is currently in development and its functionality is limited. It can cu
 - [x] Departing all planes
 - [x] Better autoprice when setting up new routes
 - [x] Auto-start eco-friendly campaign
-- [ ] Buy fuel at low price when reserve are low
-- [ ] Buy CO2 quotas at low price when reserve are low
+- [x] Buy fuel at low price
+- [x] Buy CO2 quotas at low price
 - [ ] Launch A-checks 
 - [ ] Buying new planes and setting up new routes
 
