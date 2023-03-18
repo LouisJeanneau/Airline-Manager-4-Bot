@@ -76,8 +76,8 @@ function betterAutoPrice() {
                 const line = autoPriceButton.getAttribute('onclick');
                 const values = line.slice(line.indexOf('(') + 1, line.indexOf(')')).split(',');
                 const priceValues = values.slice(0, 4);
-                GM_log(priceValues); // Output: ["799", "1798", "2946"]
-                autoPrice(Math.floor(priceValues[0] * 1.1), Math.floor(priceValues[1] * 1.08), Math.floor(priceValues[2] * 1.06), priceValues[3]);
+                GM_log(priceValues);
+                autoPrice(Math.floor(priceValues[0] * 1.1) - 10, Math.floor(priceValues[1] * 1.08) - 10, Math.floor(priceValues[2] * 1.06) - 10, priceValues[3]);
                 observer.disconnect();
                 setTimeout(betterAutoPrice, 5000);
             }
