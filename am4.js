@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM4 bot
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  automate depart for flights, better auto-price for new routes, automatic low price fuel and CO2 buying, start eco-friendly campaign before departing
 // @author       LouisJ
 // @match        https://www.airlinemanager.com/*
@@ -14,29 +14,42 @@
 let fuelPriceThreshold = 550;
 let co2PriceThreshold = 120;
 var autoDepartTimeoutID;
+var autoBuyerTimeoutID;
 
 // start function
 (function () {
     'use strict';
     setTimeout(injectToggle, 2000);
     betterAutoPrice();
-    setTimeout(scanConsumable, 4000);
+    // setTimeout(scanConsumable, 4000);
 })();
 
 // Toggle buttons
 function injectToggle() {
-    let myswitch = "<li class=\"nav-item text-white text-center\"><span class=\"xs-text text-grayed exo\">Auto-Depart</span><br><input type=\"checkbox\" id='autoDepartCheckbox' onclick='toggleAutoDepart()'></li>";
-    document.getElementsByClassName("navbar-nav")[0].children[1].insertAdjacentHTML('afterend', myswitch);
+    // Auto-depart checkbox
+    let departCheckboxText = "<li class=\"nav-item text-white text-center\"><span class=\"xs-text text-grayed exo\">Auto-Depart</span><br><input type=\"checkbox\" id='autoDepartCheckbox'></li>";
+    document.getElementsByClassName("navbar-nav")[0].children[1].insertAdjacentHTML('afterend', departCheckboxText);
     document.getElementById("autoDepartCheckbox").addEventListener("change", toggleAutoDepart);
 
+    // Auto-buy fuel checkbox
+    let buyerCheckboxText = "<li class=\"nav-item text-white text-center\"><span class=\"xs-text text-grayed exo\">Auto-buy fuel and CO2</span><br><input type=\"checkbox\" id='autoBuyerCheckbox'></li>";
+    document.getElementById("autoDepartCheckbox").parentElement.insertAdjacentHTML('afterend', buyerCheckboxText);
+    document.getElementById("autoBuyerCheckbox").addEventListener("change", toggleAutoBuyer);
 }
 
 function toggleAutoDepart() {
-    GM_log("Toggle changed");
     if (document.getElementById("autoDepartCheckbox").checked) {
         autoDepartTimeoutID = setTimeout(autoDepartRoutine, 2000);
     } else {
         clearTimeout(autoDepartTimeoutID);
+    }
+}
+
+function toggleAutoBuyer() {
+    if (document.getElementById("autoBuyerCheckbox").checked) {
+        autoBuyerTimeoutID = setTimeout(scanConsumable, 2000);
+    } else {
+        clearTimeout(autoBuyerTimeoutID);
     }
 }
 
@@ -194,7 +207,7 @@ function scanConsumable() {
 
             // Wait 30 mins before scanning again
             const time = 30 * 60 * 1000;
-            setTimeout(scanConsumable, time)
+            autoBuyerTimeoutID = setTimeout(scanConsumable, time)
         }, 500);
 
     }, 2000);
