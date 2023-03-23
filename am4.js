@@ -13,25 +13,42 @@
 // Set the price thresholds under which we buy fuel and CO2
 let fuelPriceThreshold = 550;
 let co2PriceThreshold = 120;
+var autoDepartTimeoutID;
 
+// start function
 (function () {
     'use strict';
-    setTimeout(executeEvery5Minutes, 10000);
+    setTimeout(injectToggle, 2000);
     betterAutoPrice();
     setTimeout(scanConsumable, 4000);
 })();
 
-function executeEvery5Minutes() {
+// Toggle buttons
+function injectToggle() {
+    let myswitch = "<li class=\"nav-item text-white text-center\"><span class=\"xs-text text-grayed exo\">Auto-Depart</span><br><input type=\"checkbox\" id='autoDepartCheckbox' onclick='toggleAutoDepart()'></li>";
+    document.getElementsByClassName("navbar-nav")[0].children[1].insertAdjacentHTML('afterend', myswitch);
+    document.getElementById("autoDepartCheckbox").addEventListener("change", toggleAutoDepart);
+
+}
+
+function toggleAutoDepart() {
+    GM_log("Toggle changed");
+    if (document.getElementById("autoDepartCheckbox").checked) {
+        autoDepartTimeoutID = setTimeout(autoDepartRoutine, 2000);
+    } else {
+        clearTimeout(autoDepartTimeoutID);
+    }
+}
+
+// Auto-depart
+function autoDepartRoutine() {
     // Trying to avoid detection
-    // 4-6 minutes interval between each check
-    const min = 240000;
-    const max = 360000;
+    // 4.5-5.5 minutes interval between each check
+    const min = 270000;
+    const max = 330000;
     const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
     GM_log("Next check in " + Math.floor(randomNum / 60000) + " minutes and " + (randomNum % 60000) / 1000 + " seconds.");
-    setTimeout(function () {
-        executeEvery5Minutes();
-    }, randomNum);
-    GM_log("checking for available departures");
+    autoDepartTimeoutID = setTimeout(autoDepartRoutine, randomNum);
     departAll()
 }
 
@@ -42,11 +59,13 @@ function departAll() {
         // before departing, start eco-friendly campaign
         // No better way to do it, since countdown is not visible by default
         startEcoCampaign();
-        const departButton = numberSpan.parentElement;
-        if (departButton) {
-            departButton.click();
-            GM_log("button clicked")
-        }
+        // slight delay to give time for eco-friendly campaign to start
+        setTimeout(function () {
+            const departButton = numberSpan.parentElement;
+            if (departButton) {
+                departButton.click();
+            }
+        }, 1000);
     }
 }
 
@@ -58,7 +77,7 @@ function startEcoCampaign() {
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             // Do something with the response
-            GM_log("Eco-friendly campaign started " + this.responseText);
+            GM_log("Eco-friendly campaign call : " + this.responseText);
         }
     };
 
@@ -67,7 +86,7 @@ function startEcoCampaign() {
     xhttp.send();
 }
 
-
+// Better auto-price
 function betterAutoPrice() {
     const observer = new MutationObserver(
         () => {
@@ -97,36 +116,8 @@ function getBankBalance() {
     return intBankBalance;
 }
 
-function call(url) {
-    const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                const response = xhr.responseText;
-                // Do something with the response
-                GM_log('Response:', response);
-            } else {
-                GM_log('AJAX request failed:', xhr.status);
-            }
-        }
-    };
-
-    xhr.open('GET', url, true);
-    xhr.send();
-}
-
-function buyFuel(intAmount) {
-    const url = 'fuel.php?mode=do&amount=' + encodeURIComponent(intAmount);
-    call(url);
-}
-
-
-function buyCO2(intAmount) {
-    const url = 'co2.php?mode=do&amount=' + encodeURIComponent(intAmount);
-    call(url)
-}
-
+// Fuel and CO2 auto-buy
 function scanConsumable() {
     // open the fuel window
     popup('fuel.php', 'Fuel', false, false, true);
@@ -208,3 +199,35 @@ function scanConsumable() {
 
     }, 2000);
 }
+
+function buyFuel(intAmount) {
+    const url = 'fuel.php?mode=do&amount=' + encodeURIComponent(intAmount);
+    call(url);
+}
+
+function buyCO2(intAmount) {
+    const url = 'co2.php?mode=do&amount=' + encodeURIComponent(intAmount);
+    call(url)
+}
+
+function call(url) {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                const response = xhr.responseText;
+                // Do something with the response
+                GM_log('Response:', response);
+            } else {
+                GM_log('AJAX request failed:', xhr.status);
+            }
+        }
+    };
+
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
+
+
