@@ -12,7 +12,7 @@
 
 // Set the price thresholds under which we buy fuel and CO2
 let fuelPriceThreshold = 550;
-let co2PriceThreshold = 120;
+let co2PriceThreshold = 125;
 var autoDepartTimeoutID;
 var autoBuyerTimeoutID;
 
@@ -21,7 +21,6 @@ var autoBuyerTimeoutID;
     'use strict';
     setTimeout(injectToggle, 2000);
     betterAutoPrice();
-    // setTimeout(scanConsumable, 4000);
 })();
 
 // Toggle buttons
@@ -39,7 +38,7 @@ function injectToggle() {
 
 function toggleAutoDepart() {
     if (document.getElementById("autoDepartCheckbox").checked) {
-        autoDepartTimeoutID = setTimeout(autoDepartRoutine, 2000);
+        autoDepartTimeoutID = setTimeout(autoDepartRoutine, 500);
     } else {
         clearTimeout(autoDepartTimeoutID);
     }
@@ -47,7 +46,7 @@ function toggleAutoDepart() {
 
 function toggleAutoBuyer() {
     if (document.getElementById("autoBuyerCheckbox").checked) {
-        autoBuyerTimeoutID = setTimeout(scanConsumable, 2000);
+        autoBuyerTimeoutID = setTimeout(scanConsumable, 500);
     } else {
         clearTimeout(autoBuyerTimeoutID);
     }
