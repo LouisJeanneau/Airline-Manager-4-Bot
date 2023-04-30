@@ -2,7 +2,7 @@ import datetime
 import sys
 import time
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from termcolor import cprint
 from time import sleep
 
@@ -18,7 +18,7 @@ class AirlineManager4Bot:
     username = lines[0].strip(' \t\n\r')
     password = lines[1].strip(' \t\n\r')
     f.close()
-    firefox = 'geckodriver'
+    chrome = "chromedriver.exe"
     url = 'https://www.airlinemanager.com/'
 
     # xpath
@@ -58,7 +58,8 @@ class AirlineManager4Bot:
         options = Options()
         options.add_argument("--log-level=3")
         options.add_argument('--headless')
-        self.driver = webdriver.Firefox(executable_path=self.firefox, options=options)
+        self.driver = webdriver.Chrome(executable_path=self.chrome, options=options)
+        # self.driver = webdriver.Firefox(executable_path=self.geckodriver, options=options)
         self.launcher()
 
     def launcher(self):
@@ -126,7 +127,7 @@ class AirlineManager4Bot:
 
             save_log(get_time() + " Login succesfully from user {username}!".format(username=self.username), "green")
 
-        except:
+        except Exception as e:
             save_log(get_time() + " Login function error!", "red")
         return
 
